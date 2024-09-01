@@ -3,18 +3,29 @@
 const juce::ParameterID gainParamID{"gain", 1};
 
 using ParameterLayout = juce::AudioProcessorValueTreeState::ParameterLayout;
+using juce::AudioParameterFloat;
+using juce::AudioProcessorValueTreeState;
 
-Parameters::Parameters(juce::AudioProcessorValueTreeState& apvts)
-    : gainParam_(*(dynamic_cast<juce::AudioParameterFloat*>(
-          apvts.getParameter(gainParamID.getParamID())))) {}
+namespace {
 
-void Parameters::setGain(float gain) { gainParam_ = gain; }
+AudioParameterFloat& TreeStateAndIDToFloatRef(
+    AudioProcessorValueTreeState& apvts, juce::ParameterID id) {
+  return *(
+      dynamic_cast<AudioParameterFloat*>(apvts.getParameter(id.getParamID())));
+}
 
-float Parameters::getGain() { return gainParam_.get(); }
+}  // namespace
+
+Parameters::Parameters(AudioProcessorValueTreeState& apvts)
+    : gainParam_(TreeStateAndIDToFloatRef(apvts, gainParamID)) {}
+
+void Parameters::setGainInDb(float gain) { gainParam_ = gain; }
+
+float Parameters::getGainInDb() { return gainParam_.get(); }
 
 ParameterLayout Parameters::createParameterLayout() {
   ParameterLayout layout;
-  layout.add(std::make_unique<juce::AudioParameterFloat>(
+  layout.add(std::make_unique<AudioParameterFloat>(
       gainParamID, "Output Gain", juce::NormalisableRange<float>{-12.0f, 12.0f},
       /*default=*/0.0f));
   return layout;

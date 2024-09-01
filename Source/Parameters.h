@@ -9,8 +9,8 @@ class Parameters {
   static juce::AudioProcessorValueTreeState::ParameterLayout
   createParameterLayout();
 
-  void setGain(float gainInDb);
-  float getGain();
+  void setGainInDb(float gainInDb);
+  float getGainInDb();
 
  private:
   juce::AudioParameterFloat& gainParam_;
