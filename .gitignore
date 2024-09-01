@@ -34,3 +34,6 @@
 # Builds and Juce Code
 Builds/*
 JuceLibraryCode/*
+
+# macOS
+.DS_Store
