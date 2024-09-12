@@ -72,8 +72,8 @@ void DelayAudioProcessor::changeProgramName(int index,
 //==============================================================================
 void DelayAudioProcessor::prepareToPlay(double sampleRate,
                                         int samplesPerBlock) {
-  // Use this method as the place to do any pre-playback
-  // initialisation that you need..
+  params_.prepareToPlay(sampleRate);
+  params_.reset();
 }
 
 void DelayAudioProcessor::releaseResources() {
@@ -101,16 +101,18 @@ void DelayAudioProcessor::processBlock(
   // This is here to avoid people getting screaming feedback
   // when they first compile a plugin, but obviously you don't need to keep
   // this code if your algorithm always overwrites all the output channels.
-  for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+  for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
     buffer.clear(i, 0, buffer.getNumSamples());
+  }
 
   params_.update();
-  float gain = params_.getGain();
-  for (int channel = 0; channel < totalNumInputChannels; ++channel) {
-    auto* channelData = buffer.getWritePointer(channel);
-    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-      channelData[sample] *= gain;
-    }
+  float* channelDataL = buffer.getWritePointer(0);
+  float* channelDataR = buffer.getWritePointer(1);
+  for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+    params_.smoothen();
+    float gain = params_.getGain();
+    channelDataL[sample] *= gain;
+    channelDataR[sample] *= gain;
   }
 }
 
