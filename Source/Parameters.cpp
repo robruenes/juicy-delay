@@ -8,16 +8,17 @@ using juce::AudioProcessorValueTreeState;
 
 namespace {
 
-AudioParameterFloat& TreeStateAndIDToFloatRef(
-    AudioProcessorValueTreeState& apvts, juce::ParameterID id) {
-  return *(
-      dynamic_cast<AudioParameterFloat*>(apvts.getParameter(id.getParamID())));
+template <typename T>
+static T& GetParamRef(AudioProcessorValueTreeState& apvts,
+                      juce::ParameterID id) {
+  return *(dynamic_cast<T*>(apvts.getParameter(id.getParamID())));
 }
 
 }  // namespace
 
 Parameters::Parameters(AudioProcessorValueTreeState& apvts)
-    : gain_(0.0f), gainParam_(TreeStateAndIDToFloatRef(apvts, gainParamID)) {}
+    : gain_(0.0f),
+      gainParam_(GetParamRef<AudioParameterFloat>(apvts, gainParamID)) {}
 
 void Parameters::update() noexcept {
   gain_ = juce::Decibels::decibelsToGain(gainParam_.get());
