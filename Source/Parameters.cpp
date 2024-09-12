@@ -17,7 +17,7 @@ AudioParameterFloat& TreeStateAndIDToFloatRef(
 }  // namespace
 
 Parameters::Parameters(AudioProcessorValueTreeState& apvts)
-    : gainParam_(TreeStateAndIDToFloatRef(apvts, gainParamID)) {}
+    : gain_(0.0f), gainParam_(TreeStateAndIDToFloatRef(apvts, gainParamID)) {}
 
 void Parameters::update() noexcept {
   gain_ = juce::Decibels::decibelsToGain(gainParam_.get());
