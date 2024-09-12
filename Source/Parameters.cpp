@@ -19,9 +19,13 @@ AudioParameterFloat& TreeStateAndIDToFloatRef(
 Parameters::Parameters(AudioProcessorValueTreeState& apvts)
     : gainParam_(TreeStateAndIDToFloatRef(apvts, gainParamID)) {}
 
-void Parameters::setGainInDb(float gain) { gainParam_ = gain; }
+void Parameters::update() noexcept {
+  gain_ = juce::Decibels::decibelsToGain(gainParam_.get());
+}
 
-float Parameters::getGainInDb() { return gainParam_.get(); }
+float Parameters::getGain() {
+  return gain_;
+}
 
 ParameterLayout Parameters::createParameterLayout() {
   ParameterLayout layout;
